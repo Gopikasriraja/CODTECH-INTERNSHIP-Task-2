@@ -1,0 +1,49 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# Load the dataset (replace 'data.csv' with your actual file path)
+data = pd.read_csv('data.csv')
+
+# Separate features and labels (assumes the last column is the target variable)
+features = data.iloc[:, :-1]
+labels = data.iloc[:, -1]
+
+# Handle missing values by replacing them with column means
+features.fillna(features.mean(numeric_only=True), inplace=True)
+
+# Normalize/Standardize the data
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+
+# Split the data into training and testing sets
+train_data, test_data, train_labels, test_labels = train_test_split(
+    scaled_features, labels, test_size=0.2, random_state=42
+)
+
+# Define models
+model1 = LogisticRegression()
+model2 = DecisionTreeClassifier()
+
+# Train models
+model1.fit(train_data, train_labels)
+model2.fit(train_data, train_labels)
+
+# Evaluate models
+pred1 = model1.predict(test_data)
+pred2 = model2.predict(test_data)
+
+# Calculate accuracy
+accuracy1 = accuracy_score(test_labels, pred1)
+accuracy2 = accuracy_score(test_labels, pred2)
+
+print(f"Logistic Regression Accuracy: {accuracy1}")
+print(f"Decision Tree Accuracy: {accuracy2}")
+
+# Compare models
+best_model = "Logistic Regression" if accuracy1 > accuracy2 else "Decision Tree"
+print(f"Best model: {best_model}")
